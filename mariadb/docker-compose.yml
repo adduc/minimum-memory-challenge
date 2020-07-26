@@ -1,0 +1,44 @@
+version: "2.4"
+services:
+  mariadb:
+    image: mariadb:10.4
+    mem_limit: 40M
+    ports:
+      - 172.17.0.1:3306:3306
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    command:
+      # http://www.tocker.ca/2014/03/10/configuring-mysql-to-use-minimal-memory.html
+      - mysqld
+      - --binlog-cache-size=4096
+      - --binlog-stmt-cache-size=4096
+      - --bulk-insert-buffer-size=0
+      - --host-cache-size=0
+      - --innodb-buffer-pool-chunk-size=1048576
+      - --innodb-buffer-pool-instances=1
+      - --innodb-buffer-pool-size=5242880
+      - --innodb-ft-cache-size=1600000
+      - --innodb-ft-total-cache-size=32000000
+      - --innodb-log-buffer-size=1048576
+      - --innodb-log-file-size=4194304
+      - --innodb-sort-buffer-size=65536
+      - --join-buffer-size=128
+      - --key-buffer-size=8
+      - --max-connections=10
+      - --max-heap-table-size=16384
+      - --net_buffer_length=1024
+      - --net-buffer-length=1024
+      - --performance-schema=OFF
+      - --query-cache-size=0
+      - --query-cache-type=0
+      - --read-buffer-size=8192
+      - --read-rnd-buffer-size=1
+      - --skip-bdb
+      - --skip-name-resolve
+      - --sort-buffer-size=32768
+      - --table-definition-cache=400
+      - --thread-cache-size=0
+      - --thread-stack=131072
+      - --tmp-table-size=1024
