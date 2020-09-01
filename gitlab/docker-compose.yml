@@ -1,0 +1,71 @@
+version: '2.4'
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:13.3.2-ce.0
+    mem_limit: 700M
+    ports:
+      - "80:80"
+      - "2222:22"
+    volumes:
+      - ./data/gitlab/config:/etc/gitlab
+      - ./data/gitlab/logs:/var/log/gitlab
+      - ./data/gitlab/data:/var/opt/gitlab
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab.172.17.0.1.nip.io'
+
+        gitlab_rails['terraform_state_enabled'] = false
+        gitlab_rails['impersonation_enabled'] = false
+        gitlab_rails['usage_ping_enabled'] = false
+        gitlab_rails['lfs_enabled'] = false
+        gitlab_rails['seat_link_enabled'] = false
+        gitlab_rails['registry_enabled'] = false
+        sidekiq['metrics_enabled'] = false
+        gitlab_rails['kerberos_enabled'] = false
+        gitlab_rails['packages_enabled'] = false
+        gitlab_rails['dependency_proxy_enabled'] = false
+        gitlab_rails['geo_registry_replication_enabled'] = false
+        registry['enable'] = false
+        monitoring_role['enable'] = false
+        prometheus['enable'] = false
+        alertmanager['enable'] = false
+        node_exporter['enable'] = false
+        redis_exporter['enable'] = false
+        postgres_exporter['enable'] = false
+        gitlab_exporter['enable'] = false
+        prometheus_monitoring['enable'] = false
+        grafana['enable'] = false
+        redis_sentinel_role['enable'] = false
+        sentinel['enable'] = false
+        repmgrd['enable'] = false
+
+        # https://docs.gitlab.com/omnibus/settings/rpi.html#reduce-running-processes
+        puma['worker_processes'] = 1
+        puma['min_threads'] = 2
+        puma['max_threads'] = 2
+        sidekiq['concurrency'] = 6
+
+        postgresql['enable'] = false
+        gitlab_rails['db_adapter'] = 'postgresql'
+        gitlab_rails['db_encoding'] = 'unicode'
+        gitlab_rails['db_host'] = 'postgres'
+        gitlab_rails['db_password'] = 'gitlab'
+
+        redis['enable'] = false
+        gitlab_rails['redis_host'] = 'redis'
+
+  postgres:
+    image: postgres:12-alpine
+    mem_limit: 100M
+    environment:
+      POSTGRES_DB: gitlabhq_production
+      POSTGRES_USER: gitlab
+      POSTGRES_PASSWORD: gitlab
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6
+    mem_limit: 100M
+    volumes:
+      - ./data/redis:/data
